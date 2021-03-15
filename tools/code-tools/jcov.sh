@@ -5,6 +5,8 @@ set -eu
 
 echo "WORKSPACE: $WORKSPACE"
 
+cd jcov
+
 tagName=$(hg tags | grep jcov | head -1 | awk '{ print $1 }')
 echo "Tag: ${tagName}"
 

@@ -68,6 +68,8 @@ function generateArtifact() {
 	cd asmtools
 }
 
+cd asmtools
+
 export PRODUCT_VERSION=$(grep "PRODUCT_VERSION     \= " build/productinfo.properties | awk '{print $3}')
 # shellcheck disable=SC2005,SC2046
 export BUILD_DIR=$(echo $(eval echo $(grep "BUILD_DIR = " build/build.properties | awk '{print $3}')))
