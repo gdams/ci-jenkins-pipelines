@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2020 Contributors to the Eclipse Foundation
+  ~
+  ~ This program and the accompanying materials are made
+  ~ available under the terms of the Apache Software License 2.0
+  ~ which is available at https://www.apache.org/licenses/LICENSE-2.0.
+  ~
+  ~ SPDX-License-Identifier: Apache-2.0
+-->
+
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.2" width="534.21mm" height="304.04mm" viewBox="3194 3493 53421 30404" preserveAspectRatio="xMidYMid" fill-rule="evenodd" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xml:space="preserve">
  <defs>
@@ -286,7 +296,7 @@
      <path fill="none" stroke="rgb(0,0,0)" d="M 19961,13850 L 20009,13873"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 20040,13888 L 20088,13911"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 20118,13926 L 20166,13949"/>
-     <path fill="none" stroke="rgb(0,0,0)" d="M 20197,13964 L 20245,13987"/>
+     <path fill="none" stroke="rgb(0,0,0)" d="M 20197,13964 L 20205,13987"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 20276,14002 L 20323,14025"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 20354,14040 L 20402,14063"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 20433,14078 L 20481,14101"/>
@@ -451,7 +461,7 @@
      <path fill="none" stroke="rgb(0,0,0)" d="M 32937,20111 L 32985,20134"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 33016,20149 L 33063,20172"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 33094,20187 L 33142,20210"/>
-     <path fill="none" stroke="rgb(0,0,0)" d="M 33173,20225 L 33221,20248"/>
+     <path fill="none" stroke="rgb(0,0,0)" d="M 33173,20225 L 33221,20208"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 33252,20263 L 33299,20286"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 33330,20301 L 33378,20324"/>
      <path fill="none" stroke="rgb(0,0,0)" d="M 33409,20339 L 33457,20362"/>
