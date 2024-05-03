@@ -792,8 +792,6 @@ class Build {
     We run two jobs if we have a JRE (see https://github.com/adoptium/temurin-build/issues/1751).
     */
     private void buildWindowsInstaller(VersionInfo versionData, String filter, String category) {
-        def nodeFilter = "${buildConfig.TARGET_OS}&&wix"
-
         def buildNumber = versionData.build
 
         if (versionData.major == 8) {
@@ -825,7 +823,6 @@ class Build {
                         context.string(name: 'PRODUCT_CATEGORY', value: "${category}"),
                         context.string(name: 'JVM', value: "${buildConfig.VARIANT}"),
                         context.string(name: 'ARCH', value: "${INSTALLER_ARCH}"),
-                        ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${nodeFilter}"]
                 ]
         context.copyArtifacts(
                 projectName: 'build-scripts/release/create_installer_windows',
