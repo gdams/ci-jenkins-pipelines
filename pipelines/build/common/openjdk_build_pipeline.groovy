@@ -1524,8 +1524,13 @@ class Build {
             def openjdk_build_dir_arg
 
             // Build as default within OpenJDK src tree, necessary for Windows reproducible builds, due to relative paths
-            build_path = 'workspace/build/src/build'
-            openjdk_build_dir =  context.WORKSPACE + '/' + build_path
+            if (buildConfig.TARGET_OS == 'windows') {
+                build_path = 'workspace\\build\\src\\build'
+                openjdk_build_dir = context.WORKSPACE + '\\' + build_path
+            } else {
+                build_path = 'workspace/build/src/build'
+                openjdk_build_dir = context.WORKSPACE + '/' + build_path
+            }
             openjdk_build_dir_arg = ""
 
             if (cleanWorkspace) {
@@ -2053,8 +2058,24 @@ class Build {
                                                     context.docker.image(buildConfig.DOCKER_IMAGE).pull()
                                                 }
                                             }
-                                            def long_docker_image_name = context.sh(script: "docker image ls | grep ${buildConfig.DOCKER_IMAGE} | head -n1 | awk '{print \$1}'", returnStdout:true).trim()
-                                            context.sh(script: "docker tag '${long_docker_image_name}' '${buildConfig.DOCKER_IMAGE}'", returnStdout:false)
+                                            if ( buildConfig.TARGET_OS == 'windows' && buildConfig.DOCKER_IMAGE ) { 
+                                                def long_docker_image_name = context.powershell(
+                                                    script: """
+                                                    \$long_docker_image_name = (docker image ls | Select-String -Pattern '${buildConfig.DOCKER_IMAGE}' | Select-Object -First 1).Line.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)[0]
+                                                    \$long_docker_image_name.Trim()
+                                                    """, 
+                                                    returnStdout: true
+                                                ).trim()
+                                                context.powershell(
+                                                    script: """
+                                                    docker tag '${long_docker_image_name}' '${buildConfig.DOCKER_IMAGE}'
+                                                    """,
+                                                    returnStdout: false
+                                                )
+                                            } else {
+                                                def long_docker_image_name = context.powershell(script: "docker image ls | grep ${buildConfig.DOCKER_IMAGE} | head -n1 | awk '{print \$1}'", returnStdout:true).trim()
+                                                context.sh(script: "docker tag '${long_docker_image_name}' '${buildConfig.DOCKER_IMAGE}'", returnStdout:false)
+                                            }
                                         } else {
                                             if (buildConfig.DOCKER_ARGS) {
                                                 context.sh(script: "docker pull ${buildConfig.DOCKER_IMAGE} ${buildConfig.DOCKER_ARGS}")
@@ -2069,7 +2090,14 @@ class Build {
                             }
                             // Store the pulled docker image digest as 'buildinfo'
                             if ( buildConfig.TARGET_OS == 'windows' && buildConfig.DOCKER_IMAGE ) { 
-                                dockerImageDigest = context.sh(script: "docker inspect --format={{.Id}} ${buildConfig.DOCKER_IMAGE} | /bin/cut -d: -f2", returnStdout:true)
+                                dockerImageDigest = context.powershell(
+                                    script: """
+                                    \$dockerImageId = (docker inspect --format='{{.Id}}' '${buildConfig.DOCKER_IMAGE}')
+                                    \$dockerImageDigest = \$dockerImageId.Split(':')[1].Trim()
+                                    Write-Output \$dockerImageDigest
+                                    """,
+                                    returnStdout: true
+                                ).trim()
                             } else {
                                 dockerImageDigest = context.sh(script: "docker inspect --format='{{.RepoDigests}}' ${buildConfig.DOCKER_IMAGE}", returnStdout:true)
                             }
@@ -2110,25 +2138,23 @@ class Build {
                                 String dockerRunArg="-e \"BUILDIMAGESHA=$dockerImageDigest\" --init"
 
                                 // Are we running podman in Docker CLI Emulation mode?
-                                def isPodman = context.sh(script: "docker --version | grep podman", returnStatus:true)
-                                if (isPodman == 0) {
-                                    // Note: --userns was introduced in podman 4.3.0
-                                    // Add uid and gid userns mapping required for podman
-                                    dockerRunArg += " --userns keep-id:uid=1002,gid=1003"
+                                if ( buildConfig.TARGET_OS != 'windows' && buildConfig.DOCKER_IMAGE ) { 
+                                    def isPodman = context.sh(script: "docker --version | grep podman", returnStatus:true)
+                                    if (isPodman == 0) {
+                                        // Note: --userns was introduced in podman 4.3.0
+                                        // Add uid and gid userns mapping required for podman
+                                        dockerRunArg += " --userns keep-id:uid=1002,gid=1003"
+                                    }
                                 }
                                 if (buildConfig.TARGET_OS == 'windows') {
-                                    def workspace = 'C:/workspace/openjdk-build/'
-                                    context.echo("Switched to using non-default workspace path ${workspace}")
-                                    context.ws(workspace) {
-                                        context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS+" "+dockerRunArg) {
-                                            buildScripts(
-                                                cleanWorkspace,
-                                                cleanWorkspaceAfter,
-                                                cleanWorkspaceBuildOutputAfter,
-                                                filename,
-                                                useAdoptShellScripts
-                                            )
-                                        }
+                                    context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS+" "+dockerRunArg) {
+                                        buildScripts(
+                                            cleanWorkspace,
+                                            cleanWorkspaceAfter,
+                                            cleanWorkspaceBuildOutputAfter,
+                                            filename,
+                                            useAdoptShellScripts
+                                        )
                                     }
                                 } else {
                                     context.docker.image(buildConfig.DOCKER_IMAGE).inside(buildConfig.DOCKER_ARGS+" "+dockerRunArg) {
